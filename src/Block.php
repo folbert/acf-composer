@@ -38,6 +38,16 @@ abstract class Block extends Composer implements BlockContract
      * @param int
      */
     public $post;
+    
+    /**
+     * @var \WP_Block|null
+     */
+    public $wp_block;
+
+    /**
+     * @var array|false
+     */
+    public $context;    
 
     /**
      * The block classes.
@@ -267,8 +277,8 @@ abstract class Block extends Composer implements BlockContract
                 'enqueue_assets' => function () {
                     return $this->enqueue();
                 },
-                'render_callback' => function ($block, $content = '', $preview = false, $post_id = 0) {
-                    echo $this->render($block, $content, $preview, $post_id);
+                'render_callback' => function ($block, $content = '', $preview = false, $post_id = 0, $wp_block = null, $context = false) {
+                    echo $this->render($block, $content, $preview, $post_id, $wp_block, $context);
                 }
             ]);
         });
@@ -283,13 +293,17 @@ abstract class Block extends Composer implements BlockContract
      * @param  string $content
      * @param  bool $preview
      * @param  int $post_id
+     * @param  \WP_Block|null $wp_block
+     * @param  array|bool $context
      * @return string
      */
-    public function render($block, $content = '', $preview = false, $post_id = 0)
+    public function render($block, $content = '', $preview = false, $post_id = 0, $wp_block = null, $context = false)
     {
         $this->block = (object) $block;
         $this->content = $content;
         $this->preview = $preview;
+        $this->wp_block = $wp_block;
+        $this->context = $context;        
 
         $this->post = get_post($post_id);
         $this->post_id = $post_id;
